@@ -71,6 +71,12 @@ def start_scheduler():
         schedule.run_pending()
         time.sleep(60)  # Revisar cada minuto
 
+
+# Iniciar scheduler en un hilo background al importar el módulo
+scheduler_thread = threading.Thread(target=start_scheduler)
+scheduler_thread.daemon = True
+scheduler_thread.start()
+
 # HTML Template para la interfaz web
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
@@ -212,11 +218,6 @@ if __name__ == '__main__':
         logger.warning("⚠️  WALLET_ADDRESS no configurada - configúrala en las variables de entorno")
     else:
         logger.info(f"✅ Wallet configurada: {wallet_address[:10]}...{wallet_address[-8:]}")
-    
-    # Iniciar scheduler en background
-    scheduler_thread = threading.Thread(target=start_scheduler)
-    scheduler_thread.daemon = True
-    scheduler_thread.start()
     
     # Iniciar Flask app
     port = int(os.environ.get('PORT', 8080))
